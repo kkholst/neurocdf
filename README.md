@@ -1,18 +1,3 @@
-<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. Installation</a>
-<ul>
-<li><a href="#sec-1-1">1.1. <code>netcdf 4</code> dependency</a></li>
-<li><a href="#sec-1-2">1.2. Mac OS X:</a></li>
-<li><a href="#sec-1-3">1.3. Unix/Linux</a></li>
-<li><a href="#sec-1-4">1.4. Windows</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
 # Installation
 
 Installation from R

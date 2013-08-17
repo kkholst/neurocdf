@@ -1,3 +1,5 @@
+#+OPTIONS: toc:nil
+
 * Installation
 
 Installation from R
@@ -28,3 +30,5 @@ Should be part of your distribution or compile from [[http://www.unidata.ucar.ed
 ** Windows
 
 Install binary =ncdf4= from [[http://cirrus.ucsd.edu/~pierce/ncdf/]]
+
+
