@@ -1,0 +1,30 @@
+* Installation
+
+Installation from R
+#+BEGIN_SRC R
+library(devtools)
+install_bitbucket("neurocdf","kkholst")
+#+END_SRC
+
+** =netcdf 4= dependency
+
+** Mac OS X:
+Install either via [[http://brew.sh][homebrew]]:
+
+#+BEGIN_SRC sh
+brew install netcdf --enable-cxx-compat --enable-fortran
+#+END_SRC
+
+or [[http://www.macports.org/%E2%80%8E][macports]]:
+
+#+BEGIN_SRC sh
+sudo port install netcdf +gcc47
+#+END_SRC
+
+** Unix/Linux
+
+Should be part of your distribution or compile from [[http://www.unidata.ucar.edu/downloads/netcdf/index.jsp][source]].
+
+** Windows
+
+Install binary =ncdf4= from [[http://cirrus.ucsd.edu/~pierce/ncdf/]]
