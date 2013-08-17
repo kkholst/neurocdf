@@ -23,7 +23,7 @@ print.neurocdf <- function(x,...) {
     print(type,quote=FALSE)
     glob <- c()
     for (i in seq(s$global)) {
-        desc <- fetchGlobal(x,id=i,onlydesc=TRUE)        
+        desc <- fetch(x,id=i,onlydesc=TRUE,var="GlobalImage")        
         mydesc <- trim(desc$description)
         if (length(mydesc)==0) mydesc <- ""
         glob <- rbind(glob,cbind(i,mydesc))

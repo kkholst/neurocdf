@@ -3,7 +3,7 @@ slices <- function(object,...) UseMethod("slices")
 
 ##' Plot neuroimaging slices in three planes 
 ##'
-##' Wrapper of slices3d (misc3d)
+##' Wrapper of misc3d::slices3d
 ##' @title Plot neuroimaging slices in three planes 
 ##' @param object Volume
 ##' @param olay Overlay (optional)
@@ -11,7 +11,12 @@ slices <- function(object,...) UseMethod("slices")
 ##' @param rlim2 Limits of voxel-values to plot of overlay
 ##' @param col1 Color of volume voxels
 ##' @param col2 Color of overlay voxels
-##' @param zerocenter Should center of col2 correspond to zero?
+##' @param center Choice of color scale. 0: color range from 0 to maximum value;
+##' 1: color range minimum to maximum value;
+##' 2: color range symmetric: (-1;1)*(signed maximum value);
+##' or a vector with the min and max value.
+##' @param rev.col2 Reverse col2
+##' @param center.global color ramge from slice or volume
 ##' @param main Main label
 ##' @param scale scale
 ##' @param alpha transparency
@@ -29,21 +34,26 @@ slices <- function(object,...) UseMethod("slices")
 ##' @method slices default
 slices.default <- function (object, olay = NULL, rlim1 = c(-Inf, Inf),
     rlim2 = NULL, col1 = gray.colors(255), col2 =
-    rev(rainbow(15,start=0,end=0.69)), zerocenter=TRUE, main = "Three Planes View", scale =
+    rev(rainbow(15,start=0,end=0.69)), center=1, rev.col2=FALSE, center.global=TRUE, main = "Three Planes View", scale =
     0.8, alpha = 0.5, cross = TRUE, layout = c(
     "clockwise","counterclockwise"), origin=c(45,63,36), voxelsize=c(2,2,2), start, 
     var="GlobalImage", id=1, digits=4, ...)  
 {
-
     if (!require(tkrplot)) stop("tkrplot required")
-  if (is.character(object)) {
-    dd <- neurocdf:::dim.neurocdf(object)
-    voxelsize <- dd$voxelsize
-    origin <- dd$origin
-    if (!is.null(olay) && length(dim(olay))<3)
-      olay <- mkNeuro(object,olay)
-    object <- fetch(object,var=var,id=id,...)
-  }
+    if (is.character(object)) {
+        dd <- neurocdf:::dim.neurocdf(object)
+        voxelsize <- dd$voxelsize
+        origin <- dd$origin
+        if (!is.null(olay) && length(dim(olay))<3) 
+            olay <- mkNeuro(object,olay)
+        object <- fetch(object,var=var,id=id,...)
+    }
+    if (!is.null(olay) & center.global) {
+        mi.glob <- min(olay,na.rm=TRUE)
+        ma.glob <- max(olay,na.rm=TRUE)
+    }    
+    if (rev.col2) col2 <- rev(col2)
+
   mkimg <- function(which) {
         switch(which,
                x = {
@@ -151,14 +161,22 @@ slices.default <- function (object, olay = NULL, rlim1 = c(-Inf, Inf),
         objectc <- col1[object]
         objectc[!choose1] <- "white"
         choose2 <- !is.na(olay) & (olay <= rlim2[2] & olay >= rlim2[1])
-        
-        mi <- min(olay[choose2]); ma <- max(olay[choose2])
-        colrg <- (olay - mi)/(ma-mi)
-        if (zerocenter) {
-          m <- max(abs(c(mi,ma)))
-          colrg <- (olay + m)/(2*m)
-          ## colrg[colrg<0.5]
+
+        if (center.global) {
+            mi <- mi.glob; ma <- ma.glob
+        } else {        
+            mi <- min(olay[choose2]); ma <- max(olay[choose2])
         }
+
+        m <- max(abs(c(mi,ma)))        
+        if (center==0) {
+            if (ma<0) colrg <- (olay+mi)/mi else colrg <- olay/ma
+        }
+        if (center==1) colrg <- (olay - mi)/(ma-mi)
+        if (center==2) {
+            colrg <- (olay + m)/(2*m)
+        }
+
         olay <- floor((length(col2) - 0.01) * colrg + 1)        
         olayc <- col2[olay]
         olayc[!choose2] <- "transparent"
@@ -180,14 +198,28 @@ slices.default <- function (object, olay = NULL, rlim1 = c(-Inf, Inf),
         if (missing(rlim2)) { 
           rlim2 <- range(olay, na.rm = TRUE)                 
         }
-        choose2 <- !is.na(olay) & (olay <= rlim2[2] & olay >= rlim2[1])        
-        mi <- min(olay[choose2]); ma <- max(olay[choose2])
+        choose2 <- !is.na(olay) & (olay <= rlim2[2] & olay >= rlim2[1])
+        if (center.global) {
+            mi <- mi.glob; ma <- ma.glob
+        } else {
+            mi <- min(olay[choose2]); ma <- max(olay[choose2])
+        }
         attributes(rlim2)$min <- mi
         attributes(rlim2)$max <- ma
-        if (zerocenter) {
-          m <- max(abs(c(mi,ma)))
-          attributes(rlim2)$min <- sign(mi)*m
-          attributes(rlim2)$max <- sign(ma)*m
+        m <- max(abs(c(mi,ma)))
+
+        if (center==2) {            
+          attributes(rlim2)$min <- -m
+          attributes(rlim2)$max <- m
+        }
+        if (center==0) {
+            if (ma>0) {
+                attributes(rlim2)$min <- 0
+                attributes(rlim2)$max <- ma
+            } else {
+                attributes(rlim2)$min <- mi
+                attributes(rlim2)$max <- 0
+            }
         }
         col <- overlay(object, olay, rlim1, rlim2, col1, col2, 
             alpha)

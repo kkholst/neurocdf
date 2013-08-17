@@ -135,14 +135,17 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
   }
   
   if (is.character(roi)) {
+      browser()
       roi <- ROI[na.omit(match(roi,ROI[,2])),1]
       if (length(roi)==0) {
         return(ROI)
       }
-    }
+      roi <- which(atlasvol==roi,arr.ind=TRUE)
+  }
   if (is.matrix(roi)) {
     sliceroi <- roi
-    if (ncol(sliceroi)!=3) stop("nx3 matrix of x,y,z coordinates expected")    
+    if (ncol(sliceroi)<3) stop("nx3 matrix of x,y,z coordinates expected")
+    if (ncol(sliceroi)>3) sliceroi <- sliceroi[,1:3]
   } else {
     sliceroi <- do.call("rbind",lapply(roi,function(x) which(atlasvol==x,arr.ind=TRUE)))
     if (length(sliceroi)>0)

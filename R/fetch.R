@@ -44,7 +44,7 @@ fetch.neurocdf <- function(object,id=1,type=1,pos=c(type,id),var="SubjectImage",
     if (is.null(id) | id[1]==0) {
       start[5] <- 1; count[5] <- -1
       }
-    if (is.null(type) | type[1]==0) {
+    if (is.null(type) | type[1]==0) {        
       start[4] <- 1; count[4] <- -1
     }    
     if (var!="SubjectImage") {
@@ -55,7 +55,14 @@ fetch.neurocdf <- function(object,id=1,type=1,pos=c(type,id),var="SubjectImage",
       count <- count[-4]
     }
   }
+
   if (missing(count)) stop("Count needed")
+  img <- with(neuro.env, getvarNCDF)(nc,var,start=start,count=count)
+  if (var=="SubjectImage")
+  if (is.null(type) || type[1]==0 ) {
+      with(neuro.env, closeNCDF)(nc)
+      return(img)
+  }
   vardesc <- gsub("Image","Description",var)
   desc <- as.vector(with(neuro.env, getvarNCDF)(nc,vardesc,start=c(1,1,pos),count=c(-1,-1,rep(1,length(pos)))))
   desc <- desc[desc!="" & desc!="NA"]
@@ -63,12 +70,10 @@ fetch.neurocdf <- function(object,id=1,type=1,pos=c(type,id),var="SubjectImage",
   if (!is.null(type)) idv <- paste(idv,"  type=",type,sep="");
   idv <- cbind(idv)
   colnames(idv) <- rownames(idv) <- ""
-  if (onlydesc) {      
+  if (onlydesc) {
       with(neuro.env, closeNCDF)(nc)
       return(list(description=as.vector(desc),info=list(idv)))
   }
-  img <- with(neuro.env, getvarNCDF)(nc,var,start=start,count=count)
-  with(neuro.env, closeNCDF)(nc)
   res <- structure(img,description=as.vector(desc),info=list(idv))
   class(res) <- c("neuro.vol","array")
   return(res)
@@ -84,12 +89,8 @@ fetchAtlas <- function(object,roi,id=2,var="GlobalImage",...) {
   }
   res <- structure(neurocdf:::fetch.neurocdf(object,var=var,id=id,...),ROI=ROI,info=list(ROI=ROI))  
   if (!missing(roi)) {
-    roi <- na.omit(match(roi,ROI[,2]))
-    if (length(roi)>0) {
-      idx <- res%in%roi
-      res[idx] <- 1
-      res[!idx] <- NA
-    }
+      pos <- match(res[roi],ROI[,1])
+      res <- data.frame(roi,ROI=ROI[pos,2])
   }
   return(res)
 }

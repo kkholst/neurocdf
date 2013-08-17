@@ -1,3 +1,8 @@
+
+# neurocdf
+
+![nil](inst/slices.png)
+
 # Installation
 
 Installation from R
@@ -17,9 +22,17 @@ or [macports](http://www.macports.org/%E2%80%8E):
 
     sudo port install netcdf +gcc47
 
+Install `ncdf4` from CRAN:
+
+    install.packages("ncdf4",type="source")
+
 ## Unix/Linux
 
-Should be part of your distribution or compile from [source](http://www.unidata.ucar.edu/downloads/netcdf/index.jsp).
+NetCDF should be part of your distribution or compile from [source](http://www.unidata.ucar.edu/downloads/netcdf/index.jsp).
+
+Install `ncdf4` from CRAN
+
+    install.packages("ncdf4",type="source")
 
 ## Windows
 

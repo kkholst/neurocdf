@@ -89,7 +89,7 @@ neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compr
     dimRes <- with(neurocdf:::neuro.env, dimdefNCDF)( "nResult", "units", 1 , unlim=TRUE)
     
     prec <- "single"
-    misval <- 1e30
+    misval <- with(neurocdf:::neuro.env, misval)
     img <- with(neurocdf:::neuro.env, vardefNCDF)( "SubjectImage", "units", list(dimX,dimY,dimZ,dimType,dimT), prec=prec ,missval=misval,compression=compression)
     global <- with(neurocdf:::neuro.env, vardefNCDF)( "GlobalImage", "units", list(dimX,dimY,dimZ,dimTglobal) ,missval=misval,compression=compression) ##,missval=NA)
     results <- with(neurocdf:::neuro.env, vardefNCDF)( "ResultImage", "units", list(dimX,dimY,dimZ,dimRes) ,missval=misval,compression=compression) ##,missval=NA)
@@ -149,6 +149,7 @@ neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compr
         return(neurocdf(file))
     }
 
+        
     StrMatrix <- array(dim=c(dimInfo$len,ntype,nid))
     StrMatrix[] <- ""
     id <- 0
@@ -157,42 +158,50 @@ neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compr
     count <- 0; 
     for (d in dirs) {
         id <- id+1
-        sets <- sort(list.dirs(d,full.names=TRUE,recursive=FALSE))
+        sets <- sort(list.files(d,include.dirs=TRUE,recursive=FALSE))
+        sets0 <- setdiff(allsets,sets)
         newStr <- c()
-        for (s in sets) {
-            count <- count+1
-            setTxtProgressBar(pb, count/R); flush.console()
-            message(" ", round(count/R*1000)/10, "%  ", sub(path0,"",s),appendLF=FALSE); flush.console()            
-            files <- sort(list.files(s,full.names=TRUE))
-            if (length(files)==2 | length(files)==1) {
-                fsplit <- strsplit(files[1],".",fixed=TRUE)[[1]]
-                fileprefix <- paste(fsplit[-length(fsplit)],collapse=".")
-                filepostfix <- fsplit[length(fsplit)]
-                if (filepostfix=="gz") {
-                    if (length(files)>1) stop("Compressed file and more than one file in directory: ", files)
-                    system(paste("cd ", dirname(files[1]), "; gunzip -c * > ", fileprefix))
-                }
-                infile <- create.neuro(fileprefix,flipneg=flipneg,info=paste("Image",files[1]),...)
-                if (filepostfix=="gz") {
-                    system(paste("cd ", dirname(files[1]), "; rm ",fileprefix))
-                }
-                if (!all(abs(infile$voxelsize)==abs(template$voxelsize))) stop("Voxelsize of atlas and template does not agree")
-            } else stop("Wrong file structure (one image-file (Analyze or NIFTI) pr directory")
-            myid <- tail(strsplit(d,"/")[[1]],1)
-            if (substr(myid,1,1)=="/") myid <- substr(myid,2,nchar(myid))
-            s0 <- gsub(paste(path.expand(d),"/",sep=""),"",s)
-            img <- match(s0,allsets)
-            val <- c(myid,s0,infile$hdrdesc)
+        myid <- tail(strsplit(d,"/")[[1]],1)
+        if (substr(myid,1,1)=="/") myid <- substr(myid,2,nchar(myid))
+        for (s in allsets) {
+            ##            s0 <- gsub(paste(path.expand(d),"/",sep=""),"",s)
+            if (s %in% sets) {            
+                count <- count+1
+                setTxtProgressBar(pb, count/R); flush.console()
+                message(" ", round(count/R*1000)/10, "%  ", sub(path0,"",s),appendLF=FALSE); flush.console()            
+                files <- sort(list.files(
+                                         path.expand(paste(d,s,sep="/"))
+                                         ,full.names=TRUE))
+                if (length(files)==2 | length(files)==1) {
+                    fsplit <- strsplit(files[1],".",fixed=TRUE)[[1]]
+                    fileprefix <- paste(fsplit[-length(fsplit)],collapse=".")
+                    filepostfix <- fsplit[length(fsplit)]
+                    if (filepostfix=="gz") {
+                        if (length(files)>1) stop("Compressed file and more than one file in directory: ", files)
+                        system(paste("cd ", dirname(files[1]), "; gunzip -c * > ", fileprefix))
+                    }
+                    infile <- create.neuro(fileprefix,flipneg=flipneg,info=paste("Image",files[1]),...)
+                    if (filepostfix=="gz") {
+                        system(paste("cd ", dirname(files[1]), "; rm ",fileprefix))
+                    }
+                    if (!all(abs(infile$voxelsize)==abs(template$voxelsize))) stop("Voxelsize of atlas and template does not agree")
+                } else stop("Wrong file structure (one image-file (Analyze or NIFTI) pr directory")
+            }
+            img <- match(s,allsets)
+            val <- c(myid,s,infile$hdrdesc)
             newStr <- cbind(newStr,val)
             ## infile$voxelsize <- abs(infile$voxelsize)
             ## infile$vol <- infile$vol[rev(seq_len(dim(infile$vol)[1])),,]
             offset <- c(1,1,1)+template$origin-infile$origin
-            with(neurocdf:::neuro.env, putvarNCDF)(nc,"SubjectImage",array(NA,dim(template$vol)),start=c(1,1,1,img,id),count=c(-1,-1,-1,1,1)) ## With 'ncdf' it seems missing values are not initalized correctly (works in 'ncdf4')
-            with(neurocdf:::neuro.env, putvarNCDF)(nc,"SubjectImage",infile$vol,start=c(offset,img,id),count=c(dim(infile$vol),1,1))
+            if (s %in% sets) {
+                with(neurocdf:::neuro.env, putvarNCDF)(nc,"SubjectImage",infile$vol,start=c(offset,img,id),count=c(dim(infile$vol),1,1))
+            } else {
+                with(neurocdf:::neuro.env, putvarNCDF)(nc,"SubjectImage",array(NA,dim(template$vol)),start=c(1,1,1,img,id),count=c(-1,-1,-1,1,1))
+            }
         }      
         StrMatrix[1:3,,id] <- newStr
     }
-    message("\n")
+    message("")
     close(pb)    
     with(neurocdf:::neuro.env, putvarNCDF)(nc,"SubjectDescription",StrMatrix,start=c(1,1,1,1),count=c(-1,-1,-1,-1))
 
