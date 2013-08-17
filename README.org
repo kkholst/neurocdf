@@ -2,7 +2,7 @@
 
 * neurocdf 
 
-[[file:inst/slices.png]]
+[[https://bitbucket.org/kkholst/neurocdf/raw/master/inst/slices.png]]
 
 
 * Installation

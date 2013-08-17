@@ -1,7 +1,7 @@
 
 # neurocdf
 
-![nil](inst/slices.png)
+![nil](//bitbucket.org/kkholst/neurocdf/raw/master/inst/slices.png)
 
 # Installation
 
