@@ -1,0 +1,47 @@
+Package: neurocdf
+Type: Package
+Title: Various utilities for handling neuroimaging data
+Version: 0.1-3
+Date: 2013-08-15
+Author: Klaus K. Holst
+Maintainer: Klaus K. Holst <kkho@biostat.ku.dk>
+Description: Various utilities for handling neuroimaging data
+License: GPL (>=2)
+Depends:
+    R (>= 2.15)
+Imports:
+    lava (>= 1.2.1),
+    parallel,
+    AnalyzeFMRI,
+    misc3d,
+    ncdf4
+Suggests:
+    fields,
+    tkrplot
+Collate:
+    'create.neuro.R'
+    'neuro-package.R'
+    'plot.neuro.R'
+    'print.neuro.R'
+    'upsamp.R'
+    'planeval.R'
+    'mkNeuro.R'
+    'neuro.vol.R'
+    'colorbar.R'
+    'vol2idx.R'
+    'neurocdf.R'
+    'onload.R'
+    'print.R'
+    'fetch.R'
+    'dim.R'
+    'do.R'
+    'id.R'
+    'plot.R'
+    'put.R'
+    'roi.R'
+    'summary.R'
+    'type.R'
+    'volume3d.R'
+    'coord.R'
+    'slices.R'
+    'procImageFiles.R'
