@@ -80,6 +80,24 @@ fetch.neurocdf <- function(object,id=1,type=1,pos=c(type,id),var="SubjectImage",
 }
 
 
+## fetchAtlas <- function(object,roi,id=2,var="GlobalImage",...) {
+##   rid <- id; if (var!="GlobalImage") rid <- NULL
+##   ROI <- neurocdf:::roi(object,id=rid)
+##   if (nrow(ROI)>0) {
+##     rownames(ROI) <- seq(nrow(ROI)); colnames(ROI) <- "ROI"
+##   }
+##   res <- structure(neurocdf:::fetch.neurocdf(object,var=var,id=id,...),ROI=ROI,info=list(ROI=ROI))  
+##   if (!missing(roi)) {
+##     roi <- na.omit(match(roi,ROI[,2]))
+##     if (length(roi)>0) {
+##       idx <- res%in%roi
+##       res[idx] <- 1
+##       res[!idx] <- NA
+##     }
+##   }
+##   return(res)
+## }
+
 ##' @export
 fetchAtlas <- function(object,roi,id=2,var="GlobalImage",...) {
   rid <- id; if (var!="GlobalImage") rid <- NULL
@@ -89,8 +107,13 @@ fetchAtlas <- function(object,roi,id=2,var="GlobalImage",...) {
   }
   res <- structure(neurocdf:::fetch.neurocdf(object,var=var,id=id,...),ROI=ROI,info=list(ROI=ROI))  
   if (!missing(roi)) {
-      pos <- match(res[roi],ROI[,1])
-      res <- data.frame(roi,ROI=ROI[pos,2])
+      if (is.matrix(roi)) { 
+          pos <- match(res[roi],ROI[,1])
+          res <- data.frame(roi,ROI=ROI[pos,2])         
+      } else {
+          if (is.character(roi)) roi <- ROI[match(roi,ROI[,2]),1]          
+          res <- which(array(res%in%roi,dim=dim(res)),arr.ind=TRUE)
+      }
   }
   return(res)
 }

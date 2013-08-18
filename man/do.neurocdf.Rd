@@ -4,7 +4,7 @@
 \title{Aggregate values in ROI}
 \usage{
   \method{do}{neurocdf} (object, roi, fun, type = 1,
-    margin = 2, na.rm = TRUE, na.rm.margin = 2,
+    margin = 2, na.rm = FALSE, na.rm.margin = 2,
     slice = NULL, plane = 3, x, y, z, realworld = FALSE,
     atlas = 2, var = "GlobalImage", mc.cores = 4,
     chunksize = 1000/mc.cores, exclude, ...)

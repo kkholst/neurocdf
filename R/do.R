@@ -41,7 +41,7 @@ do <- function(object,...) UseMethod("do")
 ##' @aliases do do.neurocdf
 ##' @S3method do neurocdf
 ##' @method do neurocdf
-do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2,slice=NULL,plane=3,x,y,z,realworld=FALSE,atlas=2,var="GlobalImage",mc.cores=4,chunksize=1000/mc.cores,exclude,...) {
+do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=FALSE,na.rm.margin=2,slice=NULL,plane=3,x,y,z,realworld=FALSE,atlas=2,var="GlobalImage",mc.cores=4,chunksize=1000/mc.cores,exclude,...) {
   if (!file.exists(object)) stop("netCDF file not found")
   if (is.character(type)) {
     types <- type.neurocdf(object)

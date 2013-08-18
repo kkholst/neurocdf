@@ -46,7 +46,7 @@ volume3d <- function(rois=list(),rgl=TRUE,
     R[is.na(R)] <- 0
     R <- R[x,y,z,drop=FALSE];
     ## B <- misc3d:::contour3d(R,x,y,z, level=1, alpha=alpha, draw=FALSE, material="dull",col.mesh=col.mesh,fill=fill,smooth=1,...)
-    B <- misc3d:::contour3d(R,x,y,z, level=1, alpha=alpha, smooth=1, draw=FALSE,color=color, ...)
+    B <- misc3d:::contour3d(R,x,y,z, level=1, alpha=alpha, smooth=1, draw=FALSE,color=color[i], ...)
 
     scene <- c(scene, list(B))
   }
