@@ -16,6 +16,7 @@ Installation from R
 
 Install either via [homebrew](http://brew.sh):
 
+    brew tap homebrew/science
     brew install netcdf --enable-cxx-compat --enable-fortran
 
 or [macports](http://www.macports.org/%E2%80%8E):

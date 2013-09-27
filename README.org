@@ -19,6 +19,7 @@ install_bitbucket("neurocdf","kkholst")
 Install either via [[http://brew.sh][homebrew]]:
 
 #+BEGIN_SRC sh
+brew tap homebrew/science
 brew install netcdf --enable-cxx-compat --enable-fortran
 #+END_SRC
 

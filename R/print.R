@@ -14,7 +14,7 @@ trim <- function (x, leading = TRUE, trailing = TRUE, space = "[:space:]") {
 ##' @S3method print neurocdf
 print.neurocdf <- function(x,...) {
     s <- summary(x,...)
-    cat("\n",length(s$ids), " subjects",sep="")
+    cat("\n",length(s$ids), " subjects, ",sep="")
     cat(length(s$types), " volume(s) per subject\n",sep="")
     cat("\n")
     type <- cbind(s$types,s$desc[,,1]);
