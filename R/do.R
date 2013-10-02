@@ -43,10 +43,11 @@ do <- function(object,...) UseMethod("do")
 ##' @method do neurocdf
 do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2,slice=NULL,plane=3,x,y,z,realworld=FALSE,atlas=2,var="GlobalImage",mc.cores=4,chunksize=1000/mc.cores,exclude,...) {
   if (!file.exists(object)) stop("netCDF file not found")
+  types <- NULL
   if (is.character(type)) {
-    types <- type.neurocdf(object)
-    type <- which(types%in%type)
-  }
+    type <- which(type.neurocdf(object)%in%type)
+    types <- type
+  } 
   plane <- planeval(plane)
   plotpos <- setdiff(1:3,plane)
   atlasvol <- fetchAtlas(object,id=atlas,var=var,slice=slice,plane=plane)  
@@ -57,10 +58,16 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
       }
       typecount <- 1; 
       if (type==0) {
-          type <- 1; typecount <- length(neurocdf:::type.neurocdf(object))
+          types <- neurocdf:::type.neurocdf(object)
+          type <- 1; typecount <- length(types)
+      } else {
+          if (is.null(types)) {
+              types <- (neurocdf:::type.neurocdf(object))[type]              
+          }
       }
-      dummy <- rep(seq(dim(object)$nid),each=typecount)
+      dummy <- cbind(rep(seq(dim(object)$nid),each=typecount))
       if (typecount>1) dummy <- matrix(dummy,ncol=typecount)
+      colnames(dummy) <- types
       fdummy <- fun(dummy)
       dim.fun <- length(fdummy)
       nc <- with(neurocdf:::neuro.env, openNCDF)(object)
@@ -88,7 +95,7 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
       mychunks <- split(seq(prod(dim.vol[1:2])),
                         ceiling(seq(prod(dim.vol[1:2]))/chunksize))
       pb <- txtProgressBar(style=3,width=40)
-      val <- c()      
+      val <- c()
       for (i in seq(dim.vol[3])) {
           prog <- i/dim.vol[3]
           if (prog>getTxtProgressBar(pb))
@@ -107,6 +114,7 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
 
           slice <- array(aperm(slice,c(4,3,1,2)),
                          dim=c(dslice[4],dslice[3],prod(dslice[1:2])))
+          dimnames(slice) <- list(NULL,types,NULL)
           ## slice <- array(aperm(slice,c(3,1,2)),
           ##                dim=c(dslice[3],prod(dslice[1:2])))
           procz <- function(jj) {
