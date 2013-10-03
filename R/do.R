@@ -147,7 +147,7 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
       if (length(roi)==0) {
         return(ROI)
       }
-      roi <- which(atlasvol==roi,arr.ind=TRUE)
+      roi <- which(array(atlasvol%in%roi,dim=dim(atlasvol)),arr.ind=TRUE)
   }
   if (is.matrix(roi)) {
     sliceroi <- roi
