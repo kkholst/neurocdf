@@ -45,7 +45,7 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
   if (!file.exists(object)) stop("netCDF file not found")
   types <- NULL
   if (is.character(type)) {
-    type <- which(type.neurocdf(object)%in%type)
+    type <- which(neurocdf:::type.neurocdf(object)%in%type)
     types <- type
   } 
   plane <- planeval(plane)
@@ -69,6 +69,7 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
       if (typecount>1) dummy <- matrix(dummy,ncol=typecount)
       colnames(dummy) <- types
       fdummy <- fun(dummy)
+      fnames <- names(fdummy)
       dim.fun <- length(fdummy)
       nc <- with(neurocdf:::neuro.env, openNCDF)(object)
       dim.vol <- dim(object)$dim
@@ -138,6 +139,8 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
       val1 <- do.call("rbind",val)
       ## val <- matrix(unlist(val),byrow=TRUE,ncol=ncol(val[[1]]))      
       val1 <- array(val1,dim=c(dim.vol,ncol(val1)))
+      if (!is.null(fnames))
+          dimnames(val1) <- list(NULL,NULL,NULL,fnames)
       with(neurocdf:::neuro.env,closeNCDF)(nc)
       return(val1)
   }
