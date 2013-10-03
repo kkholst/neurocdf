@@ -32,3 +32,38 @@ procImageFiles <- function(dir,newpath,checknum=2,omitpath=c(newpath,"."),IdBefo
     }
     return(invisible(NULL))
 }
+
+##' Assuming that the files are on the prefered form
+##' './subject-id/image-types/files' but where 'image-types' are for
+##' some reason not matched across different subject-ids. This
+##' function will then rename the 'image-types' for each 'subject-id'
+##' to the 'newnames'. The image-type directories in each subject-id
+##' is lexically sorted before the renaming procedure!
+##' 
+##' @title Rename image directories
+##' @param dir Path to process
+##' @param newnames New names of image-directories
+##' @param ... Additional arguments to lower level functions
+##' @author Klaus K. Holst
+##' @export
+renameImageFiles <- function(dir,newnames,...) {
+    if (!file.exists(dir)) stop("path does not exist")
+    dirs <- sort(list.dirs(path,full.names=TRUE,recursive=FALSE))
+    dd <- lapply(dirs,
+                 function(d) sort(list.files(d,recursive=FALSE,include.dirs=TRUE)))
+    names(dd) <- dirs
+    if (missing(newnames))
+        stop("New names must be supplied")
+    if (!all(unlist(lapply(dd,function(x) length(x)==length(newnames)))))
+        stop("Subject directories with different number of image-directories than 'newnames'")
+    renamed <- c()
+    for (d in dirs) {
+        for (i in 1:2) {
+            rename <- paste(d,c(dd[[d]][i],newnames[i]),sep="/")
+            renamed <- rbind(renamed,rename)
+            file.rename(rename[1],rename[2])
+        }
+    }
+    return(renamed)
+}
+
