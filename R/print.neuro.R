@@ -1,5 +1,5 @@
 ##' @S3method print neuro 
 print.neuro <- function(x,...) {
-  print(x$info)
-  print(dim(x$vol))
+    if (!is.null(x$info)) cat(x$info,"\n")
+    cat("Dimensions: ", paste(dim(x$vol),sep=" "),"\n")
 }

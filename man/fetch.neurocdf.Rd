@@ -1,8 +1,8 @@
 \name{fetch.neurocdf}
 \alias{fetch}
-\alias{fetch.neurocdf}
 \alias{fetchAtlas}
 \alias{fetchGlobal}
+\alias{fetch.neurocdf}
 \alias{fetchResult}
 \alias{fetchSubject}
 \alias{fetchTemplate}

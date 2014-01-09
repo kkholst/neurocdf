@@ -12,7 +12,7 @@ Depends:
 Imports:
     lava (>= 1.2.1),
     parallel,
-    AnalyzeFMRI,
+    oro.nifti,
     misc3d,
     ncdf4
 Suggests:
@@ -45,3 +45,4 @@ Collate:
     'coord.R'
     'slices.R'
     'procImageFiles.R'
+    'writevol.R'

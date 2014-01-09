@@ -29,18 +29,28 @@ create.neuro <- function(fileprefix,info=NULL,direction=c(1,1,1),flipneg=TRUE,..
   vol <- path.expand(vol)
   my.hdr <- AnalyzeFMRI:::f.read.header(hdr)
   my.vol <- AnalyzeFMRI:::f.read.volume(vol)[,,,1]
+  ## my.hdr <- oro.nifti:::readNIfTI(hdr)
+  ## my.vol <- my.hdr@.Data
+  ## my.hdr@.Data <- nifti()
   dim <- dim(my.vol)
   if (!is.null(my.hdr$srow.x)) {
-    my.O <- with(my.hdr, cbind(srow.x,srow.y,srow.z))
-    my.delta <- diag(my.O[1:3,1:3])
-    my.o <- abs(my.O[4,]/my.delta)
+  ## if (!is.null(my.hdr@srow_x)) {
+      my.O <- with(my.hdr, cbind(srow.x,srow.y,srow.z))
+      ## my.O <- cbind(my.hdr@srow_x,my.hdr@srow_y,my.hdr@srow_z)
+      my.delta <- diag(my.O[1:3,1:3])
+      my.o <- abs(my.O[4,]/my.delta)
   } else {
-    my.delta <- my.hdr$pixdim[1:3+1]
-    my.o <- my.hdr$originator[1:3]
+      my.delta <- my.hdr$pixdim[1:3+1]
+      my.o <- my.hdr$originator[1:3]
+      ## my.delta <- my.hdr@pixdim[1:3+1]
+      ## my.o <- my.hdr@originator[1:3]
   }
+  descrip <- my.hdr$descrip
+  ## descrip <- my.hdr@descrip
   my.o <- my.o+1
   anyflip <- FALSE
-  allidx <- lapply(dim,function(x) seq(x))      
+  allidx <- lapply(dim,function(x) seq(x))
+  browser()
   if (flipneg) {
     for (i in 1:3) {
       if (sign(my.delta[i])!=direction[i]) {
@@ -54,10 +64,10 @@ create.neuro <- function(fileprefix,info=NULL,direction=c(1,1,1),flipneg=TRUE,..
     }
     my.delta <- abs(my.delta)*direction
     if (anyflip) my.vol <- my.vol[allidx[[1]],allidx[[2]],allidx[[3]]]
-  }  
+  }
   res <- list(dim=dim,info=info,hdr=my.hdr,vol=my.vol,
               voxelsize=my.delta,origin=my.o,
-              hdrdesc=my.hdr$descrip,direction=direction,...)
+              hdrdesc=descrip,direction=direction,...)
   class(res) <- "neuro"
   return(res)
 }

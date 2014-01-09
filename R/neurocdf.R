@@ -25,18 +25,18 @@ neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compr
   
     if (is.null(path)) {
         nid <- ntype <- 1
-    }  else {
-        if (!file.exists(path)) stop("path does not exist")
-        
+    }  else {       
         if (length(path)==1 & !is.list(path)) {
+            if (!file.exists(path)) stop("path does not exist")
             dirs <- sort(list.dirs(path,full.names=TRUE,recursive=FALSE))
         } else {
+            browser()
             dirs <- unlist(path)
             if (!all(unlist(lapply(dirs,file.exists)))) stop("Directory does not exists")
         }
         d <- dirs[1]
         
-        allsets <- list.files(dirs,recursive=FALSE,include.dirs=TRUE)
+        allsets <- list.files(dirs,recursive=FALSE,include.dirs=TRUE) 
         R <- length(allsets)
         allsets <- sort(unique(allsets))
         ##sort(list.dirs(d,full.names=TRUE,recursive=FALSE))  
@@ -153,7 +153,9 @@ neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compr
     StrMatrix <- array(dim=c(dimInfo$len,ntype,nid))
     StrMatrix[] <- ""
     id <- 0
-    path0 <- path.expand(path)
+    path0 <- NULL
+    if (!is.list(path))
+        path0 <- path.expand(path)
     pb <- txtProgressBar(style=2,width=10)
     count <- 0; 
     for (d in dirs) {
@@ -168,7 +170,12 @@ neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compr
             if (s %in% sets) {            
                 count <- count+1
                 setTxtProgressBar(pb, count/R); flush.console()
-                message(" ", round(count/R*1000)/10, "%  ", sub(path0,"",s),appendLF=FALSE); flush.console()            
+                if (is.null(path0)) {
+                    message(" ", round(count/R*1000)/10, "%  ", d ,appendLF=FALSE); 
+                } else {
+                    message(" ", round(count/R*1000)/10, "%  ", sub(path0,"",s),appendLF=FALSE);                     
+                }
+                flush.console()            
                 files <- sort(list.files(
                                          path.expand(paste(d,s,sep="/"))
                                          ,full.names=TRUE))
