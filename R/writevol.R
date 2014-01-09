@@ -5,9 +5,9 @@ writevol <- function(x,filename="test",ANALYZE=FALSE,...) {
     res@pixdim <- 16
     res@.Data <- x
     if (ANALYZE) {
-        writeANALYZE(anlz(res),filename=filename,gzipped=FALSE)
+        oro.nifti::writeANALYZE(oro.nifti::anlz(res),filename=filename,gzipped=FALSE)
     } else {
-        writeNIfTI(nifti(res),filename=filename,gzipped=FALSE,onefile=TRUE)
+        oro.nifti::writeNIfTI(oro.nifti::nifti(res),filename=filename,gzipped=FALSE,onefile=TRUE)
     }
 }
 
