@@ -3,9 +3,9 @@ writevol <- function(x,filename="test",ANALYZE=FALSE,flip=TRUE,gzipped=FALSE,...
     ## res <- oro.nifti::readNIfTI(system.file("brains/single_subj_T1.nii",package="neurocdf")) ## slotNames(b2)
     ## res <- oro.nifti::readNIfTI("con_0007") ## slotNames(b2)
 
-    L <- Rniftilib::nifti.image.read(system.file("brains/con_0007",package="neurocdf"))
+    L <- Rniftilib::nifti.image.read(system.file("brains/con_0011.hdr",package="neurocdf"))
     Rniftilib::nifti.set.filenames(L, filename, check=0, set_byte_order=1)
-    L[] <- linmod1[,,,1]
+    L[] <- x[]
     Rniftilib::nifti.image.write(L)
     return(NULL)
     
