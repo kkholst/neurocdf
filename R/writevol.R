@@ -1,8 +1,8 @@
 ##' @export
 writevol <- function(x,filename="test",ANALYZE=FALSE,flip=TRUE,gzipped=FALSE,template,...) {
     if (missing(template)) {
-        template <- system.file("brains/con_0007.hdr",package="neurocdf")
-        ## template <- gsub(".hdr","",hdr)
+        template <- system.file("brains/con_0007.hdr.gz",package="neurocdf")
+        template <- gsub(".hdr","",template)
     }
     res <- oro.nifti::readNIfTI(template)
     ## oro.nifti::writeNIfTI(res,filename="con_0007",gzipped=TRUE,onefile=TRUE)
@@ -20,7 +20,8 @@ writevol <- function(x,filename="test",ANALYZE=FALSE,flip=TRUE,gzipped=FALSE,tem
     ## L$datatype <- 16
     ## L$filename <- NULL
     ## f.write.nifti(x[],filename,size="float",L=L)
-    ## return(NULL)      
+    ## return(NULL)
+    hdr <- list()
     keep <- c(
         ## "vox_offset",
         "scl_slope","scl_inter",
