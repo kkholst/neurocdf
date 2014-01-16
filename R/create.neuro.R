@@ -11,7 +11,7 @@
 ##' @param ... Additional arguments to lower level functions
 ##' @author Klaus K. Holst
 ##' @export
-create.neuro <- function(fileprefix,info=NULL,direction=c(1,1,1),flipneg=FALSE,...) {
+create.neuro <- function(fileprefix,info=NULL,direction=c(-1,1,1),flipneg=TRUE,...) {
   hdr <- vol <- txt <- NULL
   nii <- paste(fileprefix,"nii",sep=".")
   if (file.exists(nii)) {
@@ -27,6 +27,7 @@ create.neuro <- function(fileprefix,info=NULL,direction=c(1,1,1),flipneg=FALSE,.
   }
   hdr <- path.expand(hdr)
   vol <- path.expand(vol)
+  ## TODO: Rewrite to only depend on oro.nifti 
   my.hdr <- AnalyzeFMRI:::f.read.header(hdr)
   my.vol <- AnalyzeFMRI:::f.read.volume(vol)[,,,1]
   ## my.hdr <- oro.nifti:::readNIfTI(hdr)
@@ -48,13 +49,13 @@ create.neuro <- function(fileprefix,info=NULL,direction=c(1,1,1),flipneg=FALSE,.
   descrip <- my.hdr$descrip
   ## descrip <- my.hdr@descrip
   my.o <- my.o+1
-  anyflip <- FALSE
+  anyflip <- NULL
   allidx <- lapply(dim,function(x) seq(x))
 
   if (flipneg) {
     for (i in 1:3) {
       if (sign(my.delta[i])!=direction[i]) {
-        anyflip <- TRUE
+        anyflip <- c(anyflip,i)
         warning("Flipping axis ",i," of ", info)
         allidx[[i]] <- rev(allidx[[i]])
         old.o <- my.o[i]
@@ -63,11 +64,11 @@ create.neuro <- function(fileprefix,info=NULL,direction=c(1,1,1),flipneg=FALSE,.
       }
     }
     my.delta <- abs(my.delta)*direction
-    if (anyflip) my.vol <- my.vol[allidx[[1]],allidx[[2]],allidx[[3]]]
+    if (length(anyflip)>0) my.vol <- my.vol[allidx[[1]],allidx[[2]],allidx[[3]]]
   }
   res <- list(dim=dim,info=info,hdr=my.hdr,vol=my.vol,
               voxelsize=my.delta,origin=my.o,
-              hdrdesc=descrip,direction=direction,...)
+              hdrdesc=descrip,direction=direction,flipped=anyflip,...)
   class(res) <- "neuro"
   return(res)
 }

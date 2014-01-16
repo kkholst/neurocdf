@@ -13,6 +13,7 @@ Imports:
     lava (>= 1.2.1),
     parallel,
     oro.nifti,
+    AnalyzeFMRI,
     misc3d,
     ncdf4
 Suggests:
