@@ -62,14 +62,3 @@ writevol <- function(x,filename="test",ANALYZE=FALSE,flip=TRUE,gzipped=FALSE,...
         oro.nifti::writeNIfTI(out,filename=filename,gzipped=gzipped,onefile=TRUE)
     }
 }
-
-
-L <- nifti.image.read("con_0007")
-nifti.set.filenames(L, "a", check=0, set_byte_order=1)
-L[] <- fetchSubject(x,1)
-nifti.image.write(L)
-
-
-
-#pval0 <- pval; pval0[is.na(pval)] <- 1
-writevol(pval,"pval",ANALYZE=TRUE)
