@@ -11,7 +11,7 @@
 ##' @param ... Additional arguments to lower level functions
 ##' @author Klaus K. Holst
 ##' @export
-create.neuro <- function(fileprefix,info=NULL,direction=c(1,1,1),flipneg=TRUE,...) {
+create.neuro <- function(fileprefix,info=NULL,direction=c(1,1,1),flipneg=FALSE,...) {
   hdr <- vol <- txt <- NULL
   nii <- paste(fileprefix,"nii",sep=".")
   if (file.exists(nii)) {
@@ -50,7 +50,7 @@ create.neuro <- function(fileprefix,info=NULL,direction=c(1,1,1),flipneg=TRUE,..
   my.o <- my.o+1
   anyflip <- FALSE
   allidx <- lapply(dim,function(x) seq(x))
-  browser()
+
   if (flipneg) {
     for (i in 1:3) {
       if (sign(my.delta[i])!=direction[i]) {

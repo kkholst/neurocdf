@@ -16,7 +16,7 @@
 ##' @param ... Additional arguments to lower level functions
 ##' @author Klaus K. Holst
 ##' @export
-neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compression=9,...) {
+neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=FALSE,compression=9,...) {
     if (file.exists(file) & !new) {
         class(file) <- "neurocdf"
         return(file)        
@@ -30,7 +30,7 @@ neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compr
             if (!file.exists(path)) stop("path does not exist")
             dirs <- sort(list.dirs(path,full.names=TRUE,recursive=FALSE))
         } else {
-            browser()
+##            browser()
             dirs <- unlist(path)
             if (!all(unlist(lapply(dirs,file.exists)))) stop("Directory does not exists")
         }
