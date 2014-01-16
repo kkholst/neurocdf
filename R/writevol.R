@@ -1,20 +1,18 @@
 ##' @export
-writevol <- function(x,filename="test",ANALYZE=FALSE,...) {
+writevol <- function(x,filename="test",ANALYZE=FALSE,flip=TRUE,gzipped=FALSE,...) {
     res <- oro.nifti::readNIfTI(system.file("brains/single_subj_T1.nii",package="neurocdf")) ## slotNames(b2)
-    res@datatype <- 16
-    res@pixdim <- 16
-    res@.Data <- x
+
+    hdr <- list(datatype=16, dim=dim(res@.Data), 
+                srow_x=res@srow_x, srow_y=res@srow_y, srow_z=res@srow_z,
+                qoffset_x=res@qoffset_x, qoffset_y=res@qoffset_y, qoffset_z=res@qoffset_z,
+                xyzt_units=res@xyzt_units)
+    if (flip) hdr$srow_x <- -hdr$srow_x
     if (ANALYZE) {
-        oro.nifti::writeANALYZE(oro.nifti::anlz(res),filename=filename,gzipped=FALSE)
+        out <- do.call(oro.nifti::anlz, c(list(img=x[]),hdr))
+        oro.nifti::writeANALYZE(out,filename=filename,gzipped=gzipped)
     } else {
-        oro.nifti::writeNIfTI(oro.nifti::nifti(res),filename=filename,gzipped=FALSE,onefile=TRUE)
+        out <- do.call(oro.nifti::nifti, c(list(img=x[]),hdr))
+        oro.nifti::writeNIfTI(out,filename=filename,gzipped=gzipped,onefile=TRUE)
     }
 }
 
-## slotNames(b)
-## b@extents
-## b@pixdim
-## b2@pixdim
-## b@vox_offset
-## b2@vox_offset
-## lapply(slotNames(b),function(x) eval(parse(text=paste("b@",x,sep=""))))
