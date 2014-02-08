@@ -26,6 +26,7 @@
 ##' @param ... Additional arguments to lower level functions
 ##' @author Klaus K. Holst
 ##' @S3method plot neurocdf
+##' @export
 ##' @method plot neurocdf
 plot.neurocdf <- function(x,slice,mm,plane=3,roi=NULL,col=gray.colors(255),
                       roi.col=lava:::Col(rev(rainbow(15,start=0,end=0.69)),0.5),
@@ -125,7 +126,7 @@ plot.neurocdf <- function(x,slice,mm,plane=3,roi=NULL,col=gray.colors(255),
         if (!missing(roi.range)) M0 <- roi.range
         colrg <- ((img + M)/(2*M)-0.5)*(M/M0) + 0.5
         vol2 <- floor((length(roi.col) - 0.01) * colrg + 1)
-        roi.col2 <- roi.col[unique(vol2idx(vol2)[,3])]        
+        roi.col2 <- roi.col[sort(unique(vol2idx(vol2)[,3]))]
         image(xx,yy,vol2,add=TRUE,useRaster=TRUE,xlab="",ylab="",col=roi.col2,...)
         if (colorbar) {
             colorbar(roi.col,direction="horizontal",y.range=min(yy)+c(0,3),x.range=range(xx),values=c(-M0,M0),label.offset=2,srt=0)

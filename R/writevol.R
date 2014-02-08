@@ -44,6 +44,6 @@ writevol <- function(x,filename="test",ANALYZE=FALSE,flip=TRUE,gzipped=FALSE,tem
         oro.nifti::writeANALYZE(out,filename=filename,gzipped=gzipped,...)
     } else {
         out <- do.call(oro.nifti::nifti, c(list(img=x[]),hdr))
-        oro.nifti::writeNIfTI(out,filename=filename,gzipped=gzipped,...)
+        oro.nifti::writeNIfTI(out,filename=filename,gzipped=gzipped,onefile=FALSE,...)
     }
 }
