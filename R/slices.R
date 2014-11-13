@@ -30,14 +30,13 @@ slices <- function(object,...) UseMethod("slices")
 ##' @param digits number of digits to show in legend
 ##' @param ... Additional arguments to lower level arguments
 ##' @export
-##' @S3method slices default
 ##' @method slices default
 slices.default <- function (object, olay = NULL, rlim1 = c(-Inf, Inf),
     rlim2 = NULL, col1 = gray.colors(255), col2 =
     rev(rainbow(15,start=0,end=0.69)), center=1, rev.col2=FALSE, center.global=TRUE, main = "Three Planes View", scale =
     0.8, alpha = 0.5, cross = TRUE, layout = c(
     "clockwise","counterclockwise"), origin=c(45,63,36), voxelsize=c(2,2,2), start, 
-    var="GlobalImage", id=1, digits=4, ...)  
+    var="GlobalImage", id=1, digits=2, ...)  
 {
     if (!require(tkrplot)) stop("tkrplot required")
     if (is.character(object)) {
@@ -266,12 +265,14 @@ slices.default <- function (object, olay = NULL, rlim1 = c(-Inf, Inf),
         M <- max(abs(rlim2))
         dM <- (attributes(rlim2)$max-attributes(rlim2)$min)/nlut
         for (i in seq_len(nlut+1)-1) {
-          xx = -delta + (i-1)*scale
-          if (i>0)
-            rect(xx,-0.3,xx+scale,-0.4, col=col2[i], border=NA)
-          rnd <- 10^digits
-          rund <- round((attributes(rlim2)$min+dM*i)*rnd)/rnd
-          text(xx+(1+0.5)*scale,-0.2,rund,cex=0.7,srt=45)
+                xx = -delta + (i-1)*scale
+                if (i>0)
+                    rect(xx,-0.3,xx+scale,-0.4, col=col2[i], border=NA)
+                rnd <- 10^digits
+                rund <- round((attributes(rlim2)$min+dM*i)*rnd)/rnd
+                if (i%%round(nlut/10)==1 || i==nlut) {                    
+                    text(xx+(1+0.5)*scale,-0.2,rund,cex=0.7,srt=45)
+                }
         }
       }
     }

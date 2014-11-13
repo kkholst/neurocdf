@@ -75,8 +75,8 @@ neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compr
     dimInfo <- with(neurocdf:::neuro.env, dimdefNCDF)("Info","units",1:16)
     dimROI <- with(neurocdf:::neuro.env, dimdefNCDF)("nROI","units",1:512)
     dimStr <- with(neurocdf:::neuro.env, dimdefNCDF)("String","units",1:128)
-    dimType <- with(neurocdf:::neuro.env, dimdefNCDF)( "nType", "units", seq_len(ntype), unlim=TRUE)
-    dimT <- with(neurocdf:::neuro.env, dimdefNCDF)( "nSubject", "units", seq_len(nid), unlim=TRUE)
+    dimType <- with(neurocdf:::neuro.env, dimdefNCDF)( "nType", "units", seq_len(ntype), unlim=FALSE)
+    dimT <- with(neurocdf:::neuro.env, dimdefNCDF)( "nSubject", "units", seq_len(nid), unlim=FALSE)
     nglobal <- 2
     natlas <- 1
     if (class(atlas)!="neuro") {
@@ -85,7 +85,7 @@ neurocdf <- function(file,path,template,atlas,extra,new=FALSE,flipneg=TRUE,compr
     } else {
         atlas <- list(atlas)
     }
-    dimTglobal <- with(neurocdf:::neuro.env, dimdefNCDF)( "nGlobal", "units", seq_len(nglobal), unlim=TRUE)
+    dimTglobal <- with(neurocdf:::neuro.env, dimdefNCDF)( "nGlobal", "units", seq_len(nglobal), unlim=FALSE)
     dimRes <- with(neurocdf:::neuro.env, dimdefNCDF)( "nResult", "units", 1 , unlim=TRUE)
     
     prec <- "single"

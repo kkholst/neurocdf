@@ -42,12 +42,12 @@ do <- function(object,...) UseMethod("do")
 ##' @S3method do neurocdf
 ##' @method do neurocdf
 do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2,slice=NULL,plane=3,x,y,z,realworld=FALSE,atlas=2,var="GlobalImage",mc.cores=4,chunksize=1000/mc.cores,exclude,...) {
-  if (!file.exists(object)) stop("netCDF file not found")
-  types <- NULL
-  if (is.character(type)) {
-    type <- which(neurocdf:::type.neurocdf(object)%in%type)
-    types <- type
-  } 
+    if (!file.exists(object)) stop("netCDF file not found")
+    types <- NULL
+    if (is.character(type)) {
+        type <- which(neurocdf:::type.neurocdf(object)%in%type)
+        types <- type
+    }
   plane <- planeval(plane)
   plotpos <- setdiff(1:3,plane)
   atlasvol <- fetchAtlas(object,id=atlas,var=var,slice=slice,plane=plane)  
@@ -145,6 +145,7 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
       return(val1)
   }
 
+
   if (is.character(roi)) {
       roi <- ROI[na.omit(match(roi,ROI[,2])),1]
       if (length(roi)==0) {
@@ -162,7 +163,8 @@ do.neurocdf <- function(object,roi,fun,type=1,margin=2,na.rm=TRUE,na.rm.margin=2
     if (!missing(slice)) {
       sliceroi <- (cbind(sliceroi,slice))[,order(c(plotpos,plane)),drop=FALSE]
     }
-  }
+}
+
   if (length(sliceroi)==0) return(list(roi=NULL,value=NULL))  
   res <- list(vx=sliceroi)
   if (realworld) res <- c(res,list(mm=coord.neurocdf(object,vx=res[[1]])))
